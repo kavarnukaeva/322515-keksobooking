@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Анна Каварнукаева](https://up.htmlacademy.ru/javascript/16/user/322515).
-* Наставник: `Неизвестно`.
+* Наставник: [Никита Ткачук](https://up.htmlacademy.ru/javascript/16/user/450211).
 
 ---
 
