@@ -91,6 +91,7 @@ var generateOffer = function (quantity) {
         guests: guests,
         checkin: checkin[getRandomValue(checkin)],
         checkout: checkout[getRandomValue(checkout)],
+        
         // перемешивает массив и вынимаю случайное число из его копии
         features: shuffle(features).slice(getRandomValue(features)),
         description: description,
