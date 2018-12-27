@@ -3,6 +3,14 @@
 var OFFERS_QUANTITY = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
+var MAP_HEIGHT = 704;
+var MAP_WIDTH = 1200;
+var MAINPIN_HEIGHT = 199.95;
+var MAINPIN_WIDTH = 199.95;
+var X_MAINPIN = Math.floor(MAP_WIDTH / 2 - MAINPIN_WIDTH / 2);
+var Y_MAINPIN = Math.floor(MAP_HEIGHT / 2 - MAINPIN_HEIGHT / 2);
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 
 var similarPinList = document.querySelector('.map__pins');
 var similarPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -39,7 +47,7 @@ var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditio
 var description = [' '];
 var photos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
-//Функция перемешивания массива
+// функция перемешивания массива
 var shuffle = function (array) {
     var j;
     var x;
@@ -53,13 +61,13 @@ var shuffle = function (array) {
     return array;
 };
 
-//Функция генерации случайных данных
+// функция генерации случайных данных
 var getRandomValue = function (array) {
   var randomValue = Math.floor(Math.random() * array.length);
   return randomValue;
 };
 
-//Функция создания массива из 8 объектов
+// функция создания массива из 8 объектов
 var generateOffer = function (quantity) {
   var array = [];
 
@@ -83,7 +91,7 @@ var generateOffer = function (quantity) {
         guests: guests,
         checkin: checkin[getRandomValue(checkin)],
         checkout: checkout[getRandomValue(checkout)],
-        // перемешиваю массив и вынимаю случайное число из его копии
+        // перемешивает массив и вынимаю случайное число из его копии
         features: shuffle(features).slice(getRandomValue(features)),
         description: description,
         photos: shuffle(photos)
@@ -101,8 +109,7 @@ var generateOffer = function (quantity) {
 
 var offers = generateOffer(OFFERS_QUANTITY);
 
-document.querySelector('.map').classList.remove('map--faded');
-
+//функция отрисовки метки
 var renderPin = function (array) {
   var pinElement = similarPinTemplate.cloneNode(true);
 
@@ -113,6 +120,7 @@ var renderPin = function (array) {
   return pinElement;
 };
 
+//функция отрисовки объявления
 var renderOffer = function (array) {
   var offerElement = similarOfferTemplate.cloneNode(true);
 
@@ -147,7 +155,7 @@ var renderOffer = function (array) {
     var image = popupPhotos.querySelector('img');
     popupPhotos.appendChild(image.cloneNode(true));
 
-    // ищу и наполняю все созданные элементы
+    // ищет и наполняет все созданные элементы
     var images = popupPhotos.querySelectorAll('img');
     images[i].setAttribute('src', `${array.offer.photos[i]}`);
   }
@@ -155,13 +163,117 @@ var renderOffer = function (array) {
   return offerElement;
 };
 
-var fragment = document.createDocumentFragment();
-for (var j = 0; j < OFFERS_QUANTITY; j++) {
-  fragment.appendChild(renderPin(offers[j]));
-  fragment.appendChild(renderOffer(offers[j]));
+// отключает поля формы поиска объявления для неактивного состояния
+var disabledElements = document.querySelectorAll('form.ad-form fieldset');
+
+for (var i = 0; i < disabledElements.length; i++) {
+  disabledElements[i].setAttribute('disabled', '');
 }
 
-similarPinList.appendChild(fragment);
+// отключает форму c фильтрами для неактивного состояния
+var mapFilters = document.querySelector('.map__filters');
 
-var filters = similarOfferList.querySelector('.map__filters-container');
-similarOfferList.insertBefore(fragment, filters);
+mapFilters.classList.add('map__filters--disabled');
+
+var mainPin = document.querySelector('.map__pin--main');
+var map = document.querySelector('.map');
+var adForm = document.querySelector('.ad-form');
+var address = document.querySelector('#address');
+
+address.setAttribute('value', `${X_MAINPIN}, ${Y_MAINPIN}`);
+
+// активное состояние
+var changeToActiveState = function () {
+  mainPin.removeEventListener('mouseup', changeToActiveState);
+
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+
+  for (var i = 0; i < disabledElements.length; i++) {
+    disabledElements[i].removeAttribute('disabled');
+  }
+
+  mapFilters.classList.remove('map__filter--disabled');
+
+  showPinsAndOffers();
+
+  // показ объявления при клике на метку
+  var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+  for (var i = 0; i < mapPin.length; i++) {
+    mapPin[i].addEventListener('click', mapPinClickHandler);
+  }
+};
+
+// переводит страницу в активное состояние по клику
+mainPin.addEventListener('mouseup', changeToActiveState);
+
+// переводит страницу в активное состояние по нажатию на ENTER
+mainPin.addEventListener('keydown', mainPinKeydownHandler);
+
+var mainPinKeydownHandler = function(evt) {
+  mainPin.removeEventListener('keydown', mainPinKeydownHandler);
+  if (evt.keyCode === ENTER_KEYCODE) {
+    changeToActiveState();
+  }
+};
+
+var mapPinClickHandler = function(evt) {
+  var target = evt.currentTarget;
+  var offer = target.nextSibling;
+  var coords = offer.querySelector('.popup__text--address');
+
+  // добавляет координаты в поле адреса
+  address.setAttribute('value', coords.textContent);
+
+  hideShownOffers();
+
+  offer.classList.remove('hidden');
+  closePopup(offer);
+};
+
+// функция закрытия объявления
+var closePopup = function (popup) {
+  var close = popup.querySelector('.popup__close');
+
+  close.addEventListener('click', function() {
+    popup.classList.add('hidden');
+  });
+
+  close.addEventListener('keydown', function(evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      popup.classList.add('hidden');
+    }
+  });
+};
+
+var hideShownOffers = function() {
+  var mapCard = document.querySelectorAll('.map__card');
+
+  // скрывает показанные ранее карточки
+  for (var j = 0; j < mapCard.length; j++) {
+    if (!mapCard[j].classList.contains('hidden')) {
+      mapCard[j].classList.add('hidden');
+    }
+  }
+};
+
+var showPinsAndOffers = function () {
+  // отрисовывает метки и объявления на странице
+  var fragment = document.createDocumentFragment();
+  for (var j = 0; j < OFFERS_QUANTITY; j++) {
+    fragment.appendChild(renderPin(offers[j]));
+    fragment.appendChild(renderOffer(offers[j]));
+  }
+
+  similarPinList.appendChild(fragment);
+
+  var filters = similarOfferList.querySelector('.map__filters-container');
+  similarOfferList.insertBefore(fragment, filters);
+};
+
+// document.addEventListener('keydown', function(evt) {
+//   if (evt.keyCode === ESC_KEYCODE) {
+//     mapCard.classList.add('hidden');
+//   }
+// });
