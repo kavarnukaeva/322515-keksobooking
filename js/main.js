@@ -206,17 +206,17 @@ var changeToActiveState = function () {
 };
 
 // переводит страницу в активное состояние по клику
-mainPin.addEventListener('mouseup', changeToActiveState);
+mainPin.addEventListener('click', changeToActiveState);
 
-// переводит страницу в активное состояние по нажатию на ENTER
-mainPin.addEventListener('keydown', mainPinKeydownHandler);
-
-var mainPinKeydownHandler = function(evt) {
-  mainPin.removeEventListener('keydown', mainPinKeydownHandler);
-  if (evt.keyCode === ENTER_KEYCODE) {
-    changeToActiveState();
-  }
-};
+// // переводит страницу в активное состояние по нажатию на ENTER
+// mainPin.addEventListener('keydown', mainPinKeydownHandler);
+//
+// var mainPinKeydownHandler = function(evt) {
+//   mainPin.removeEventListener('keydown', mainPinKeydownHandler);
+//   if (evt.keyCode === ENTER_KEYCODE) {
+//     changeToActiveState();
+//   }
+// };
 
 var mapPinClickHandler = function(evt) {
   var target = evt.currentTarget;
@@ -277,3 +277,34 @@ var showPinsAndOffers = function () {
 //     mapCard.classList.add('hidden');
 //   }
 // });
+
+var offerTitleInput = document.querySelector('#title');
+
+offerTitleInput.addEventListener('invalid', function(evt) {
+  if (offerTitleInput.validity.tooShort) {
+    offerTitleInput.setCustomValidity('Заголовок должен состоять минимум из 30 символов');
+  } else if (offerTitleInput.validity.tooLong) {
+    offerTitleInput.setCustomValidity('Заголовок не должен превышать 100 символов');
+  } else if (offerTitleInput.validity.valueMissing) {
+    offerTitleInput.setCustomValidity('Обязательное поле');
+  } else {
+    offerTitleInput.setCustomValidity('');
+  }
+});
+
+var form = document.querySelector('.ad-form');
+var roomsNumberInput = document.querySelector('#room_number');
+var guestsNumberInput = document.querySelector('#capacity');
+
+
+form.addEventListener('change', function() {
+  if (parseInt(roomsNumberInput.value, 10) < parseInt(guestsNumberInput.value, 10)) {
+    guestsNumberInput.setCustomValidity('Слишком много народу для такой комнатушки!');
+  } else if (parseInt(roomsNumberInput.value, 10) === 100 && parseInt(guestsNumberInput.value, 10) !== 0) {
+    guestsNumberInput.setCustomValidity('Эта хата не для гостей!');
+  } else if (guestsNumberInput.value === '0' && parseInt(roomsNumberInput.value, 10) !== 100) {
+    guestsNumberInput.setCustomValidity('Выберите количество гостей!');
+  } else {
+    guestsNumberInput.setCustomValidity('');
+  }
+});
