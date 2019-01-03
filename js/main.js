@@ -5,12 +5,16 @@ var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 var MAP_HEIGHT = 704;
 var MAP_WIDTH = 1200;
-var MAINPIN_HEIGHT = 199.95;
 var MAINPIN_WIDTH = 199.95;
+var MAINPIN_HEIGHT = 199.95;
+var MAINPIN_ACTIVE_WIDTH = 62;
+var MAINPIN_ACTIVE_HEIGHT = 84;
 var X_MAINPIN = Math.floor(MAP_WIDTH / 2 - MAINPIN_WIDTH / 2);
 var Y_MAINPIN = Math.floor(MAP_HEIGHT / 2 - MAINPIN_HEIGHT / 2);
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
+var HORIZON_MAPPOINT = 130;
+var FILTER_MAPPOINT = 630;
 
 var similarPinList = document.querySelector('.map__pins');
 var similarPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -183,6 +187,21 @@ var address = document.querySelector('#address');
 address.setAttribute('value', `${X_MAINPIN}, ${Y_MAINPIN}`);
 
 // активное состояние
+
+var mapPinClickHandler = function(evt) {
+  var target = evt.currentTarget;
+  var offer = target.nextSibling;
+  var coords = offer.querySelector('.popup__text--address');
+
+  // добавляет координаты в поле адреса
+  address.setAttribute('value', coords.textContent);
+
+  hideShownOffers();
+
+  offer.classList.remove('hidden');
+  closePopup(offer);
+};
+
 var changeToActiveState = function () {
   mainPin.removeEventListener('mouseup', changeToActiveState);
 
@@ -206,31 +225,69 @@ var changeToActiveState = function () {
 };
 
 // переводит страницу в активное состояние по клику
-mainPin.addEventListener('click', changeToActiveState);
+// mainPin.addEventListener('click', changeToActiveState);
 
-// // переводит страницу в активное состояние по нажатию на ENTER
-// mainPin.addEventListener('keydown', mainPinKeydownHandler);
-//
-// var mainPinKeydownHandler = function(evt) {
-//   mainPin.removeEventListener('keydown', mainPinKeydownHandler);
-//   if (evt.keyCode === ENTER_KEYCODE) {
-//     changeToActiveState();
-//   }
-// };
+mainPin.addEventListener('mousedown', function(evt) {
+  evt.preventDefault();
 
-var mapPinClickHandler = function(evt) {
-  var target = evt.currentTarget;
-  var offer = target.nextSibling;
-  var coords = offer.querySelector('.popup__text--address');
+  var startCoords ={
+    x: evt.clientX,
+    y: evt.clientY
+  };
 
-  // добавляет координаты в поле адреса
-  address.setAttribute('value', coords.textContent);
+  var mouseMoveHandler = function (moveEvt) {
+    moveEvt.preventDefault();
 
-  hideShownOffers();
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
 
-  offer.classList.remove('hidden');
-  closePopup(offer);
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    if (shift.x <= mainPin.offsetLeft) {
+      mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+    }
+
+    if (mainPin.offsetLeft > MAP_WIDTH - MAINPIN_ACTIVE_WIDTH) {
+      mainPin.style.left = mainPin.offsetLeft + shift.x + 'px';
+    }
+
+    if (shift.y < mainPin.offsetTop - HORIZON_MAPPOINT + MAINPIN_ACTIVE_HEIGHT) {
+      mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
+    }
+
+    if (mainPin.offsetTop > FILTER_MAPPOINT) {
+      mainPin.style.top = mainPin.offsetTop + shift.y + 'px';
+    }
+
+    address.setAttribute('value', `${parseInt(mainPin.style.top)}, ${parseInt(mainPin.style.left)}`);
+  };
+
+  var mouseUpHandler = function (upEvt) {
+    upEvt.preventDefault();
+    changeToActiveState();
+
+    document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseUpHandler);
+  };
+
+  document.addEventListener('mousemove', mouseMoveHandler);
+  document.addEventListener('mouseup', mouseUpHandler);
+});
+
+// переводит страницу в активное состояние по нажатию на ENTER
+var mainPinKeydownHandler = function(evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    changeToActiveState();
+  }
+  mainPin.removeEventListener('keydown', mainPinKeydownHandler);
 };
+
+mainPin.addEventListener('keydown', mainPinKeydownHandler);
 
 // функция закрытия объявления
 var closePopup = function (popup) {
@@ -309,7 +366,6 @@ form.addEventListener('submit', function() {
     guestsNumberInput.setCustomValidity('');
   }
 });
-
 
 homeTypeInput.addEventListener('change', function() {
   if (homeTypeInput.value === 'bungalo') {
