@@ -4,8 +4,6 @@
   var similarPinList = document.querySelector('.map__pins');
   var similarOfferList = document.querySelector('.map');
 
-  var offers = generateOffer(window.constants.OFFERS_QUANTITY);
-
   // отключает поля формы поиска объявления для неактивного состояния
   var disabledElements = document.querySelectorAll('form.ad-form fieldset');
 
@@ -23,7 +21,7 @@
   var adForm = document.querySelector('.ad-form');
   var address = document.querySelector('#address');
 
-  address.setAttribute('value', `${window.constants.X_MAINPIN}, ${window.constants.Y_MAINPIN}`);
+  address.setAttribute('value', `${Math.floor(window.Constants.MAP_WIDTH / 2 - window.Constants.MAINPIN_WIDTH / 2)}, ${Math.floor(window.Constants.MAP_HEIGHT / 2 - window.Constants.MAINPIN_HEIGHT / 2)}`);
 
   // активное состояние
 
@@ -35,7 +33,7 @@
     // добавляет координаты в поле адреса
     address.setAttribute('value', coords.textContent);
 
-    hideShownOffers();
+    window.utils.hideShownOffers();
 
     offer.classList.remove('hidden');
     closePopup(offer);
@@ -53,20 +51,13 @@
 
     mapFilters.classList.remove('map__filter--disabled');
 
-    showPinsAndOffers();
-
-    // показ объявления при клике на метку
-    var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-
-    for (var i = 0; i < mapPin.length; i++) {
-      mapPin[i].addEventListener('click', mapPinClickHandler);
-    }
+    window.backend.load(successHandler, window.utils.errorHandler);
   };
 
   mainPin.addEventListener('mousedown', function(evt) {
     evt.preventDefault();
 
-    var startCoords ={
+    var startCoords = {
       x: evt.clientX,
       y: evt.clientY
     };
@@ -88,15 +79,15 @@
         mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
       }
 
-      if (mainPin.offsetLeft > window.constants.MAP_WIDTH - window.constants.MAINPIN_ACTIVE_WIDTH) {
+      if (mainPin.offsetLeft > window.Constants.MAP_WIDTH - window.Constants.MAINPIN_ACTIVE_WIDTH) {
         mainPin.style.left = mainPin.offsetLeft + shift.x + 'px';
       }
 
-      if (shift.y < mainPin.offsetTop - window.constants.HORIZON_MAPPOINT + window.constants.MAINPIN_ACTIVE_HEIGHT) {
+      if (shift.y < mainPin.offsetTop - window.Constants.HORIZON_MAPPOINT + window.Constants.MAINPIN_ACTIVE_HEIGHT) {
         mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
       }
 
-      if (mainPin.offsetTop > window.constants.FILTER_MAPPOINT) {
+      if (mainPin.offsetTop > window.Constants.FILTER_MAPPOINT) {
         mainPin.style.top = mainPin.offsetTop + shift.y + 'px';
       }
 
@@ -117,7 +108,7 @@
 
   // переводит страницу в активное состояние по нажатию на ENTER
   var mainPinKeydownHandler = function(evt) {
-    if (evt.keyCode === window.constants.ENTER_KEYCODE) {
+    if (evt.keyCode === window.Constants.ENTER_KEYCODE) {
       changeToActiveState();
     }
     mainPin.removeEventListener('keydown', mainPinKeydownHandler);
@@ -134,34 +125,35 @@
     });
 
     close.addEventListener('keydown', function(evt) {
-      if (evt.keyCode === window.constants.ENTER_KEYCODE) {
+      if (evt.keyCode === window.Constants.ENTER_KEYCODE) {
         popup.classList.add('hidden');
       }
     });
   };
 
-  var hideShownOffers = function() {
-    var mapCard = document.querySelectorAll('.map__card');
+  window.utils.hideShownOffers();
 
-    // скрывает показанные ранее карточки
-    for (var j = 0; j < mapCard.length; j++) {
-      if (!mapCard[j].classList.contains('hidden')) {
-        mapCard[j].classList.add('hidden');
-      }
-    }
-  };
-
-  var showPinsAndOffers = function () {
+  var successHandler = function (data) {
     // отрисовывает метки и объявления на странице
     var fragment = document.createDocumentFragment();
-    for (var j = 0; j < window.constants.OFFERS_QUANTITY; j++) {
-      fragment.appendChild(renderPin(offers[j]));
-      fragment.appendChild(renderOffer(offers[j]));
+    for (var j = 0; j < data.length; j++) {
+      // проверяет наличие ключа offer
+      if (data[j].offer) {
+        fragment.appendChild(renderPin(data[j]));
+        fragment.appendChild(renderOffer(data[j]));
+      }
     }
 
     similarPinList.appendChild(fragment);
 
     var filters = similarOfferList.querySelector('.map__filters-container');
     similarOfferList.insertBefore(fragment, filters);
+
+    // показ объявления при клике на метку
+    var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+    for (var i = 0; i < mapPin.length; i++) {
+      mapPin[i].addEventListener('click', mapPinClickHandler);
+    }
   };
 })();
