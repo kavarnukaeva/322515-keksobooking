@@ -3,7 +3,7 @@
 (function () {
   var similarOfferTemplate = document.querySelector('#card').content.querySelector('.popup');
 
-  //функция отрисовки объявления
+  // функция отрисовки объявления
   window.renderOffer = function (array) {
     var offerElement = similarOfferTemplate.cloneNode(true);
 
@@ -15,7 +15,7 @@
       offerElement.querySelector('.popup__text--address').style.display = 'none';
     }
 
-    offerElement.querySelector('.popup__text--price').textContent = `${array.offer.price}₽/ночь`;
+    offerElement.querySelector('.popup__text--price').textContent = array.offer.price + ' ₽/ночь';
     if (array.offer.type === 'palace') {
       offerElement.querySelector('.popup__type').textContent = 'Дворец';
     }
@@ -32,14 +32,14 @@
       offerElement.querySelector('.popup__type').textContent = 'Бунгало';
     }
 
-    if (array.offer.rooms.length && array.offer.guests.length) {
-      offerElement.querySelector('.popup__text--capacity').textContent = `${array.offer.rooms} комнаты для ${array.offer.guests} гостей`;
+    if (array.offer.rooms && array.offer.guests) {
+      offerElement.querySelector('.popup__text--capacity').textContent = array.offer.rooms + ' комнаты для ' + array.offer.guests + ' гостей';
     } else {
       offerElement.querySelector('.popup__text--capacity').style.display = 'none';
     }
 
     if (array.offer.checkin.length && array.offer.checkout.length) {
-      offerElement.querySelector('.popup__text--time').textContent = `Заезд после ${array.offer.checkin}, выезд до ${array.offer.checkout}`;
+      offerElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + array.offer.checkin + ', выезд до ' + array.offer.checkout;
     } else {
       offerElement.querySelector('.popup__text--time').style.display = 'none';
     }
@@ -57,19 +57,19 @@
     }
 
     if (array.offer.photos.length) {
-      offerElement.querySelector('.popup__photos').querySelector('img').setAttribute('src', `${array.offer.photos[0]}`);
+      offerElement.querySelector('.popup__photos').querySelector('img').setAttribute('src', array.offer.photos[0]);
 
       if (array.offer.photos.length > 1) {
-        offerElement.querySelector('img').setAttribute('src', `${array.author.avatar}`);
+        offerElement.querySelector('img').setAttribute('src', array.author.avatar);
 
-        for (var i = 1; i < array.offer.photos.length; i++ ) {
+        for (var i = 1; i < array.offer.photos.length; i++) {
           var popupPhotos = offerElement.querySelector('.popup__photos');
           var image = popupPhotos.querySelector('img');
           popupPhotos.appendChild(image.cloneNode(true));
 
           // ищет и наполняет все созданные элементы
           var images = popupPhotos.querySelectorAll('img');
-          images[i].setAttribute('src', `${array.offer.photos[i]}`);
+          images[i].setAttribute('src', array.offer.photos[i]);
         }
       }
     } else {

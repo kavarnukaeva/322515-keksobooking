@@ -6,7 +6,7 @@
       var map = document.querySelector('.map');
       var form = document.querySelector('.ad-form');
 
-      //возвращает карту и форму в неактивное состояние
+      // возвращает карту и форму в неактивное состояние
       map.classList.add('map--faded');
       form.classList.add('ad-form--disabled');
 
@@ -25,7 +25,7 @@
       mainPin.style.left = window.Constants.LEFT_MAINPIN + 'px';
       mainPin.style.top = window.Constants.TOP_MAINPIN + 'px';
 
-      address.setAttribute('value', `${Math.floor(window.Constants.MAP_WIDTH / 2 - window.Constants.MAINPIN_WIDTH / 2)}, ${Math.floor(window.Constants.MAP_HEIGHT / 2 - window.Constants.MAINPIN_HEIGHT / 2)}`);
+      window.address.setAttribute('value', window.Constants.TOP_MAINPIN + ', ' + window.Constants.LEFT_MAINPIN);
 
       // скрывает показанные объявления
       window.utils.hideShownOffers();
@@ -42,7 +42,7 @@
       form.reset();
     },
 
-    hideShownOffers: function() {
+    hideShownOffers: function () {
       var mapCard = document.querySelectorAll('.map__card');
 
       // скрывает показанные ранее карточки
@@ -53,27 +53,25 @@
       }
     },
 
-    errorHandler: function (errorMessage) {
+    errorHandler: function () {
       var errorMessage = document.querySelector('#error').content.querySelector('.error');
       var main = document.querySelector('main');
 
       main.appendChild(errorMessage);
       errorMessage.style.display = 'block';
 
-      var errorButton = errorMessage.querySelector('.error__button');
-
-      errorButton.addEventListener('click', function () {
+      document.addEventListener('click', function () {
         errorMessage.style.display = 'none';
       });
 
-      document.addEventListener('keydown', function(evt) {
+      document.addEventListener('keydown', function (evt) {
         if (evt.keyCode === window.Constants.ESC_KEYCODE) {
           errorMessage.style.display = 'none';
         }
       });
     },
 
-    successMessage: function (successMessage) {
+    successMessage: function () {
       var main = document.querySelector('main');
 
       var successMessage = document.querySelector('#success').content.querySelector('.success');
@@ -81,11 +79,46 @@
       main.appendChild(successMessage);
       successMessage.style.display = 'block';
 
-      document.addEventListener('keydown', function(evt) {
+      document.addEventListener('click', function () {
+        successMessage.style.display = 'none';
+      });
+
+      document.addEventListener('keydown', function (evt) {
         if (evt.keyCode === window.Constants.ESC_KEYCODE) {
           successMessage.style.display = 'none';
         }
       });
+    },
+
+    processData: function (type, url, onError, onLoad, data) {
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'json';
+
+      xhr.addEventListener('load', function () {
+        if (xhr.status === 200) {
+          onLoad(xhr.response);
+        } else {
+          onError();
+        }
+      });
+
+      xhr.addEventListener('error', function () {
+        onError();
+      });
+
+      xhr.addEventListener('timeout', function () {
+        onError();
+      });
+
+      xhr.timeout = window.Constants.TIMEOUT;
+
+      xhr.open(type, url);
+
+      if (data) {
+        xhr.send(data);
+      } else {
+        xhr.send();
+      }
     }
   };
 })();

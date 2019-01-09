@@ -51,7 +51,8 @@
   });
 
   form.addEventListener('submit', function (evt) {
-    window.backend.upload(new FormData(form), function (response) {
+    window.backend.upload(new FormData(form), function () {
+      window.utils.successMessage();
       window.utils.changeToInitialState();
     });
     evt.preventDefault();

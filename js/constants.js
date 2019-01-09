@@ -17,6 +17,7 @@
     FILTER_MAPPOINT: 630,
     LEFT_MAINPIN: 570,
     TOP_MAINPIN: 375,
+    TIMEOUT: 10000,
     URL: 'https://js.dump.academy/keksobooking'
   };
 })();

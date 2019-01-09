@@ -19,19 +19,19 @@
   var mainPin = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
-  var address = document.querySelector('#address');
+  window.address = document.querySelector('#address');
 
-  address.setAttribute('value', `${Math.floor(window.Constants.MAP_WIDTH / 2 - window.Constants.MAINPIN_WIDTH / 2)}, ${Math.floor(window.Constants.MAP_HEIGHT / 2 - window.Constants.MAINPIN_HEIGHT / 2)}`);
+  window.address.setAttribute('value', window.Constants.TOP_MAINPIN + ', ' + window.Constants.LEFT_MAINPIN);
 
   // активное состояние
 
-  var mapPinClickHandler = function(evt) {
+  var mapPinClickHandler = function (evt) {
     var target = evt.currentTarget;
     var offer = target.nextSibling;
     var coords = offer.querySelector('.popup__text--address');
 
     // добавляет координаты в поле адреса
-    address.setAttribute('value', coords.textContent);
+    window.address.setAttribute('value', coords.textContent);
 
     window.utils.hideShownOffers();
 
@@ -45,8 +45,8 @@
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
 
-    for (var i = 0; i < disabledElements.length; i++) {
-      disabledElements[i].removeAttribute('disabled');
+    for (var j = 0; j < disabledElements.length; j++) {
+      disabledElements[j].removeAttribute('disabled');
     }
 
     mapFilters.classList.remove('map__filter--disabled');
@@ -54,7 +54,7 @@
     window.backend.load(successHandler, window.utils.errorHandler);
   };
 
-  mainPin.addEventListener('mousedown', function(evt) {
+  mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
     var startCoords = {
@@ -91,7 +91,7 @@
         mainPin.style.top = mainPin.offsetTop + shift.y + 'px';
       }
 
-      address.setAttribute('value', `${parseInt(mainPin.style.top)}, ${parseInt(mainPin.style.left)}`);
+      window.address.setAttribute('value', parseInt(mainPin.style.top, 10) + ', ' + parseInt(mainPin.style.left, 10));
     };
 
     var mouseUpHandler = function (upEvt) {
@@ -107,7 +107,7 @@
   });
 
   // переводит страницу в активное состояние по нажатию на ENTER
-  var mainPinKeydownHandler = function(evt) {
+  var mainPinKeydownHandler = function (evt) {
     if (evt.keyCode === window.Constants.ENTER_KEYCODE) {
       changeToActiveState();
     }
@@ -120,11 +120,11 @@
   var closePopup = function (popup) {
     var close = popup.querySelector('.popup__close');
 
-    close.addEventListener('click', function() {
+    close.addEventListener('click', function () {
       popup.classList.add('hidden');
     });
 
-    close.addEventListener('keydown', function(evt) {
+    close.addEventListener('keydown', function (evt) {
       if (evt.keyCode === window.Constants.ENTER_KEYCODE) {
         popup.classList.add('hidden');
       }
@@ -136,11 +136,11 @@
   var successHandler = function (data) {
     // отрисовывает метки и объявления на странице
     var fragment = document.createDocumentFragment();
-    for (var j = 0; j < data.length; j++) {
+    for (var k = 0; k < data.length; k++) {
       // проверяет наличие ключа offer
-      if (data[j].offer) {
-        fragment.appendChild(renderPin(data[j]));
-        fragment.appendChild(renderOffer(data[j]));
+      if (data[k].offer) {
+        fragment.appendChild(window.renderPin(data[k]));
+        fragment.appendChild(window.renderOffer(data[k]));
       }
     }
 
@@ -152,8 +152,8 @@
     // показ объявления при клике на метку
     var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
 
-    for (var i = 0; i < mapPin.length; i++) {
-      mapPin[i].addEventListener('click', mapPinClickHandler);
+    for (var l = 0; l < mapPin.length; l++) {
+      mapPin[l].addEventListener('click', mapPinClickHandler);
     }
   };
 })();
