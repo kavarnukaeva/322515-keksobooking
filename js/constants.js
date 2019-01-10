@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  window.constants = {
+  window.Constants = {
     OFFERS_QUANTITY: 8,
     PIN_WIDTH: 50,
     PIN_HEIGHT: 70,
@@ -11,11 +11,13 @@
     MAINPIN_HEIGHT: 199.95,
     MAINPIN_ACTIVE_WIDTH: 62,
     MAINPIN_ACTIVE_HEIGHT: 84,
-    X_MAINPIN: Math.floor(window.MAP_WIDTH / 2 - window.MAINPIN_WIDTH / 2),
-    Y_MAINPIN: Math.floor(window.MAP_HEIGHT / 2 - window.MAINPIN_HEIGHT / 2),
     ESC_KEYCODE: 27,
     ENTER_KEYCODE: 13,
     HORIZON_MAPPOINT: 130,
-    FILTER_MAPPOINT: 630
+    FILTER_MAPPOINT: 630,
+    LEFT_MAINPIN: 570,
+    TOP_MAINPIN: 375,
+    TIMEOUT: 10000,
+    URL: 'https://js.dump.academy/keksobooking'
   };
 })();

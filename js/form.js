@@ -16,6 +16,7 @@
   });
 
   var form = document.querySelector('.ad-form');
+  var formReset = form.querySelector('.ad-form__reset');
   var roomsNumberInput = document.querySelector('#room_number');
   var guestsNumberInput = document.querySelector('#capacity');
   var homeTypeInput = document.querySelector('#type');
@@ -47,5 +48,17 @@
       priceInput.setAttribute('min', '10000');
       priceInput.setAttribute('placeholder', '10000');
     }
+  });
+
+  form.addEventListener('submit', function (evt) {
+    window.backend.upload(new FormData(form), function () {
+      window.utils.successMessage();
+      window.utils.changeToInitialState();
+    });
+    evt.preventDefault();
+  });
+
+  formReset.addEventListener('click', function () {
+    window.utils.changeToInitialState();
   });
 })();
