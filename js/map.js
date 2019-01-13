@@ -1,15 +1,15 @@
 'use strict';
 
 (function () {
-  window.similarPinList = document.querySelector('.map__pins');
-  window.similarOfferList = document.querySelector('.map');
+  var similarPinList = document.querySelector('.map__pins');
+  var similarOfferList = document.querySelector('.map');
 
   // пустой массив под данные
-  var initialData = [];
+  window.initialData = [];
 
   // функция сохранения данных
   var getData = function (data) {
-    initialData = data;
+    window.initialData = data;
     window.successHandler(data);
   };
 
@@ -111,7 +111,7 @@
       upEvt.preventDefault();
 
       // если данные уже загружены или форма в неактивном состоянии
-      if (!initialData.length || adForm.classList.contains('ad-form--disabled')) {
+      if (!window.initialData.length || adForm.classList.contains('ad-form--disabled')) {
         changeToActiveState();
       }
 
@@ -152,7 +152,7 @@
 
   window.successHandler = function (data) {
     // исходный и фильтруемый впоследствии массив данных
-    window.transferedData = data;
+    window.dataToFilter = data;
 
     // перемешивает массив и оставляет 5 элементов
     window.initialData = window.utils.shuffle(data).slice(0, 5);
@@ -168,16 +168,28 @@
       }
     });
 
-    window.similarPinList.appendChild(fragment);
+    similarPinList.appendChild(fragment);
 
-    window.filters = window.similarOfferList.querySelector('.map__filters-container');
-    window.similarOfferList.insertBefore(fragment, window.filters);
+    window.filters = similarOfferList.querySelector('.map__filters-container');
+    similarOfferList.insertBefore(fragment, window.filters);
 
     // показ объявления при клике на метку
     window.mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
 
     [].forEach.call(window.mapPin, function (item) {
       item.addEventListener('click', window.mapPinClickHandler);
+    });
+
+    // фильтрует и устраняет дребезг
+    var lastTimeout;
+
+    window.mapFilters.addEventListener('change', function () {
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function () {
+        window.filterPins(window.dataToFilter);
+      }, window.Constants.DEBOUNCE_INTERVAL);
     });
   };
 })();

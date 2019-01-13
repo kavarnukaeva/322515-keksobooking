@@ -36,9 +36,9 @@
 
       // скрывает показанные метки
       var hideShownPins = function () {
-        var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+        window.mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
 
-        [].forEach.call(mapPin, function (item) {
+        [].forEach.call(window.mapPin, function (item) {
           item.classList.add('hidden');
         });
       };
@@ -138,6 +138,12 @@
       }
 
       return array;
+    },
+
+    removeElements: function (array) {
+      array.forEach(function (el) {
+        el.remove();
+      });
     }
   };
 })();
