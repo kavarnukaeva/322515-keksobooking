@@ -57,21 +57,21 @@
     }
 
     if (array.offer.photos.length) {
-      offerElement.querySelector('.popup__photos').querySelector('img').setAttribute('src', array.offer.photos[0]);
+      offerElement.querySelector('img').setAttribute('src', array.author.avatar);
 
-      if (array.offer.photos.length > 1) {
-        offerElement.querySelector('img').setAttribute('src', array.author.avatar);
+      var popupPhotos = offerElement.querySelector('.popup__photos');
+      var fragment = document.createDocumentFragment();
 
-        for (var i = 1; i < array.offer.photos.length; i++) {
-          var popupPhotos = offerElement.querySelector('.popup__photos');
-          var image = popupPhotos.querySelector('img');
-          popupPhotos.appendChild(image.cloneNode(true));
+      array.offer.photos.forEach(function (item) {
+        var newElement = document.createElement('img');
+        newElement.setAttribute('width', window.Constants.PHOTO_WIDTH);
+        newElement.setAttribute('height', window.Constants.PHOTO_HEIGHT);
+        newElement.setAttribute('src', item);
 
-          // ищет и наполняет все созданные элементы
-          var images = popupPhotos.querySelectorAll('img');
-          images[i].setAttribute('src', array.offer.photos[i]);
-        }
-      }
+        newElement.className = 'popup__photo';
+        fragment.appendChild(newElement);
+      });
+      popupPhotos.appendChild(fragment);
     } else {
       offerElement.querySelector('.popup__photos').style.display = 'none';
     }

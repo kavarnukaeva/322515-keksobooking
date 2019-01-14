@@ -20,6 +20,8 @@
     TIMEOUT: 10000,
     DEBOUNCE_INTERVAL: 500,
     URL: 'https://js.dump.academy/keksobooking',
+    PHOTO_WIDTH: 45,
+    PHOTO_HEIGHT: 40,
     PINS_TO_RENDER_QUANTITY: 5,
     FILTER_HOUSING_PRICE: {
       low: 10000,
