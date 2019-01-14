@@ -3,23 +3,19 @@
 (function () {
   window.mapFilters = document.querySelector('.map__filters');
 
-  // селекты
+  // функция удаления всех меток и объявлений
+  var removeAll = function () {
+    var allpins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    var alloffers = document.querySelectorAll('.map__card');
+
+    window.utils.removeElements(allpins);
+    window.utils.removeElements(alloffers);
+  };
+
   var compareValues = function (dataValue, filterValue) {
-    if (typeof parseInt(dataValue, 10) === 'number') {
-      if (parseInt(dataValue, 10) >= window.Constants.FILTER_HOUSING_PRICE.low &&
-          parseInt(dataValue, 10) <= window.Constants.FILTER_HOUSING_PRICE.high) {
-        return 'middle';
-      } else if (parseInt(dataValue, 10) < window.Constants.FILTER_HOUSING_PRICE.low) {
-        return 'low';
-      }
-
-      return 'high';
-    }
-
     return filterValue === 'any' || filterValue === dataValue.toString();
   };
 
-  // чекбоксы
   var compareFeatures = function (dataFeatures, featuresCheckbox) {
     var arrayFeaturesChosen = [];
 
@@ -34,7 +30,16 @@
     return arrayFeaturesChosen.every(isChosenDataFeatures);
   };
 
-  window.filterPins = function (data) {
+  var getPriceValue = function (offerPrice) {
+    if (offerPrice < window.Constants.FILTER_HOUSING_PRICE.low) {
+      return 'low';
+    } else if (offerPrice >= window.Constants.FILTER_HOUSING_PRICE.high) {
+      return 'high';
+    }
+    return 'middle';
+  };
+
+  window.filterData = function (data, cropDataToRender) {
     // очищает контейнер
     removeAll();
 
@@ -44,23 +49,19 @@
     var housingGuestsValue = window.mapFilters.querySelector('#housing-guests').value;
     var chosenFeatures = window.mapFilters.querySelectorAll('input:checked');
 
-    var filteredPins = data.filter(function (it) {
+    var filteredData = data.filter(function (it) {
       return compareValues(it.offer.type, housingTypeValue) &&
-        compareValues(it.offer.price, housingPriceValue) &&
+        compareValues(getPriceValue(it.offer.price), housingPriceValue) &&
         compareValues(it.offer.rooms, housingRoomsValue) &&
         compareValues(it.offer.guests, housingGuestsValue) &&
         compareFeatures(it.offer.features, chosenFeatures);
     });
 
-    window.successHandler(filteredPins);
-  };
+    // если длина данных больше необходимого
+    if (filteredData.length > window.Constants.PINS_TO_RENDER_QUANTITY) {
+      cropDataToRender = window.utils.cropData(filteredData, window.Constants.PINS_TO_RENDER_QUANTITY);
+    }
 
-  // функция удаления всех меток и объявлений
-  var removeAll = function () {
-    var allpins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    var alloffers = document.querySelectorAll('.map__card');
-
-    window.utils.removeElements(allpins);
-    window.utils.removeElements(alloffers);
+    window.renderPins(filteredData, cropDataToRender);
   };
 })();

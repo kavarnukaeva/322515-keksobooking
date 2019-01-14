@@ -154,19 +154,45 @@
     // исходный и фильтруемый впоследствии массив данных
     window.dataToFilter = data;
 
-    // перемешивает массив и оставляет 5 элементов
-    window.initialData = window.utils.shuffle(data).slice(0, 5);
+    // данные используемые до фильтрации
+    window.beforeFilterData = window.utils.cropData(data, window.Constants.PINS_TO_RENDER_QUANTITY);
+
+    window.renderPins(window.beforeFilterData);
+  };
+
+  window.renderPins = function (data, cropedData) {
+    // фильтрует и устраняет дребезг
+    var lastTimeout;
+
+    window.mapFilters.addEventListener('change', function () {
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function () {
+        window.filterData(window.dataToFilter, cropedData);
+      }, window.Constants.DEBOUNCE_INTERVAL);
+    });
 
     // отрисовывает метки и объявления на странице
     var fragment = document.createDocumentFragment();
 
-    window.initialData.forEach(function (item) {
-      // проверяет наличие ключа offer
-      if (item.offer) {
-        fragment.appendChild(window.renderPin(item));
-        fragment.appendChild(window.renderOffer(item));
-      }
-    });
+    if (cropedData) {
+      cropedData.forEach(function (item) {
+        // проверяет наличие ключа offer
+        if (item.offer) {
+          fragment.appendChild(window.renderPin(item));
+          fragment.appendChild(window.renderOffer(item));
+        }
+      });
+    } else {
+      data.forEach(function (item) {
+        // проверяет наличие ключа offer
+        if (item.offer) {
+          fragment.appendChild(window.renderPin(item));
+          fragment.appendChild(window.renderOffer(item));
+        }
+      });
+    }
 
     similarPinList.appendChild(fragment);
 
@@ -178,18 +204,6 @@
 
     [].forEach.call(window.mapPin, function (item) {
       item.addEventListener('click', window.mapPinClickHandler);
-    });
-
-    // фильтрует и устраняет дребезг
-    var lastTimeout;
-
-    window.mapFilters.addEventListener('change', function () {
-      if (lastTimeout) {
-        window.clearTimeout(lastTimeout);
-      }
-      lastTimeout = window.setTimeout(function () {
-        window.filterPins(window.dataToFilter);
-      }, window.Constants.DEBOUNCE_INTERVAL);
     });
   };
 })();

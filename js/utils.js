@@ -144,6 +144,14 @@
       array.forEach(function (el) {
         el.remove();
       });
+    },
+
+    cropData: function (data, num) {
+      if (data.length > num) {
+        window.utils.shuffle(data).splice(0, data.length - num);
+      }
+
+      return data;
     }
   };
 })();
