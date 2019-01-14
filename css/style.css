@@ -383,6 +383,18 @@ fieldset {
           box-shadow: 0 0 2px 2px #ff6547;
 }
 
+.map__filter:disabled {
+  cursor: default;
+}
+
+.map__features:disabled .map__feature:hover,
+.map__features:disabled .map__feature:focus,
+.map__features:disabled .map__feature:active {
+  box-shadow: none;
+  background-color: #f8f8f8;
+  cursor: default;
+}
+
 .map__feature {
   display: inline-block;
   overflow: hidden;

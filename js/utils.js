@@ -12,13 +12,17 @@
 
       // отключает поля формы поиска объявления для неактивного состояния
       var disabledElements = document.querySelectorAll('form.ad-form fieldset');
-      for (var i = 0; i < disabledElements.length; i++) {
-        disabledElements[i].setAttribute('disabled', '');
-      }
+
+      [].forEach.call(disabledElements, function (item) {
+        item.setAttribute('disabled', '');
+      });
 
       // отключает форму c фильтрами для неактивного состояния
-      var mapFilters = document.querySelector('.map__filters');
-      mapFilters.classList.add('map__filters--disabled');
+      var mapFiltersChildren = document.querySelector('.map__filters').children;
+
+      [].forEach.call(mapFiltersChildren, function (item) {
+        item.setAttribute('disabled', '');
+      });
 
       // возвращает главной метке дефолтные координаты
       var mainPin = document.querySelector('.map__pin--main');
@@ -32,10 +36,11 @@
 
       // скрывает показанные метки
       var hideShownPins = function () {
-        var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-        for (var j = 0; j < mapPin.length; j++) {
-          mapPin[j].classList.add('hidden');
-        }
+        window.mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+        [].forEach.call(window.mapPin, function (item) {
+          item.classList.add('hidden');
+        });
       };
       hideShownPins();
 
@@ -46,11 +51,11 @@
       var mapCard = document.querySelectorAll('.map__card');
 
       // скрывает показанные ранее карточки
-      for (var j = 0; j < mapCard.length; j++) {
-        if (!mapCard[j].classList.contains('hidden')) {
-          mapCard[j].classList.add('hidden');
+      [].forEach.call(mapCard, function (item) {
+        if (!item.classList.contains('hidden')) {
+          item.classList.add('hidden');
         }
-      }
+      });
     },
 
     errorHandler: function () {
@@ -119,6 +124,34 @@
       } else {
         xhr.send();
       }
+    },
+
+    shuffle: function (array) {
+      var j;
+      var x;
+      var i;
+      for (i = array.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = array[i];
+        array[i] = array[j];
+        array[j] = x;
+      }
+
+      return array;
+    },
+
+    removeElements: function (array) {
+      array.forEach(function (el) {
+        el.remove();
+      });
+    },
+
+    cropData: function (data, num) {
+      if (data.length > num) {
+        window.utils.shuffle(data).splice(0, data.length - num);
+      }
+
+      return data;
     }
   };
 })();
