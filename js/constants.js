@@ -23,9 +23,36 @@
     PHOTO_WIDTH: 45,
     PHOTO_HEIGHT: 40,
     PINS_TO_RENDER_QUANTITY: 5,
+    GUESTS_MAXCOUNT: 100,
+    ZERO: 0,
+    ANY_VALUE: 'any',
+    PER_NIGHT: ' ₽/ночь',
     FILTER_HOUSING_PRICE: {
+      low: 'low',
+      middle: 'middle',
+      high: 'high'
+    },
+    FILTER_HOUSING_PRICE_TYPE: {
       low: 10000,
       high: 50000
+    },
+    PLACE_ELEMENTS_CONTENT: {
+      bungalo: 'Бунгало',
+      flat: 'Квартира',
+      house: 'Дом',
+      palace: 'Дворец'
+    },
+    PLACE_TYPE: {
+      bungalo: 'bungalo',
+      flat: 'flat',
+      house: 'house',
+      palace: 'palace'
+    },
+    MIN_PRICE: {
+      bungalo: '0',
+      flat: '1000',
+      house: '5000',
+      palace: '10000'
     }
   };
 })();

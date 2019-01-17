@@ -1,11 +1,11 @@
 'use strict';
 
 (function () {
-  var similarPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var similarPinElementTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
   // функция отрисовки метки
   window.renderPin = function (array) {
-    var pinElement = similarPinTemplate.cloneNode(true);
+    var pinElement = similarPinElementTemplate.cloneNode(true);
 
     pinElement.setAttribute('style', 'left: ' + array.location.x + 'px; top: ' + array.location.y + 'px;');
     pinElement.querySelector('img').setAttribute('alt', array.offer.title);

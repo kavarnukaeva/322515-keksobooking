@@ -15,19 +15,21 @@
     }
   });
 
-  var form = document.querySelector('.ad-form');
-  var formReset = form.querySelector('.ad-form__reset');
+  var formElement = document.querySelector('.ad-form');
+  var formResetElement = formElement.querySelector('.ad-form__reset');
   var roomsNumberInput = document.querySelector('#room_number');
   var guestsNumberInput = document.querySelector('#capacity');
   var homeTypeInput = document.querySelector('#type');
-  var priceInput = document.querySelector('#price');
+  window.priceInput = document.querySelector('#price');
+  var checkInSelect = document.querySelector('#timein');
+  var checkOutSelect = document.querySelector('#timeout');
 
-  form.addEventListener('change', function () {
+  formElement.addEventListener('change', function () {
     if (parseInt(roomsNumberInput.value, 10) < parseInt(guestsNumberInput.value, 10)) {
       guestsNumberInput.setCustomValidity('Слишком много народу для такой комнатушки!');
-    } else if (parseInt(roomsNumberInput.value, 10) === 100 && parseInt(guestsNumberInput.value, 10) !== 0) {
+    } else if (parseInt(roomsNumberInput.value, 10) === window.Constants.GUESTS_MAXCOUNT && parseInt(guestsNumberInput.value, 10) !== window.Constants.ZERO) {
       guestsNumberInput.setCustomValidity('Эта хата не для гостей!');
-    } else if (guestsNumberInput.value === '0' && parseInt(roomsNumberInput.value, 10) !== 100) {
+    } else if (guestsNumberInput.value === '0' && parseInt(roomsNumberInput.value, 10) !== window.Constants.GUESTS_MAXCOUNT) {
       guestsNumberInput.setCustomValidity('Выберите количество гостей!');
     } else {
       guestsNumberInput.setCustomValidity('');
@@ -35,30 +37,54 @@
   });
 
   homeTypeInput.addEventListener('change', function () {
-    if (homeTypeInput.value === 'bungalo') {
-      priceInput.setAttribute('min', '0');
-      priceInput.setAttribute('placeholder', '0');
-    } else if (homeTypeInput.value === 'flat') {
-      priceInput.setAttribute('min', '1000');
-      priceInput.setAttribute('placeholder', '1000');
-    } else if (homeTypeInput.value === 'house') {
-      priceInput.setAttribute('min', '5000');
-      priceInput.setAttribute('placeholder', '5000');
+    if (homeTypeInput.value === window.Constants.PLACE_TYPE.bungalo) {
+      window.priceInput.setAttribute('min', window.Constants.MIN_PRICE.bungalo);
+      window.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.bungalo);
+    } else if (homeTypeInput.value === window.Constants.PLACE_TYPE.flat) {
+      window.priceInput.setAttribute('min', window.Constants.MIN_PRICE.flat);
+      window.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.flat);
+    } else if (homeTypeInput.value === window.Constants.PLACE_TYPE.house) {
+      window.priceInput.setAttribute('min', window.Constants.MIN_PRICE.house);
+      window.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.house);
     } else {
-      priceInput.setAttribute('min', '10000');
-      priceInput.setAttribute('placeholder', '10000');
+      window.priceInput.setAttribute('min', window.Constants.MIN_PRICE.palace);
+      window.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.palace);
     }
   });
 
-  form.addEventListener('submit', function (evt) {
-    window.backend.upload(new FormData(form), function () {
-      window.utils.successMessage();
+  var sync = function (selected, synchronized) {
+    var activeSelectOptionSelected = selected.querySelector('[selected]');
+    activeSelectOptionSelected.removeAttribute('selected');
+
+    var activeSelectOptionSelectedCurrent = selected.querySelector('[value="' + selected.value + '"]');
+    activeSelectOptionSelectedCurrent.setAttribute('selected', '');
+
+    synchronized.value = activeSelectOptionSelectedCurrent.value;
+
+    var selectOptionSelected = synchronized.querySelector('[selected]');
+    selectOptionSelected.removeAttribute('selected');
+
+    var selectOptionValue = synchronized.querySelector('[value="' + synchronized.value + '"]');
+    selectOptionValue.setAttribute('selected', '');
+  };
+
+  checkInSelect.addEventListener('change', function () {
+    sync(checkInSelect, checkOutSelect);
+  });
+
+  checkOutSelect.addEventListener('change', function () {
+    sync(checkOutSelect, checkInSelect);
+  });
+
+  formElement.addEventListener('submit', function (evt) {
+    window.backend.upload(new FormData(formElement), function () {
+      window.utils.returnSuccessMessage();
       window.utils.changeToInitialState();
     });
     evt.preventDefault();
   });
 
-  formReset.addEventListener('click', function () {
+  formResetElement.addEventListener('click', function () {
     window.utils.changeToInitialState();
   });
 })();
