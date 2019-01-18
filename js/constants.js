@@ -20,6 +20,7 @@
     TIMEOUT: 10000,
     DEBOUNCE_INTERVAL: 500,
     URL: 'https://js.dump.academy/keksobooking',
+    SRC: 'img/muffin-grey.svg',
     PHOTO_WIDTH: 45,
     PHOTO_HEIGHT: 40,
     PINS_TO_RENDER_QUANTITY: 5,

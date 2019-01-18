@@ -18,7 +18,6 @@
     mapPinClickHandler: function (evt) {
       var target = evt.currentTarget;
       var offer = target.nextSibling;
-      var coords = offer.querySelector('.popup__text--address');
 
       window.mapPinsElements.forEach(function (item) {
         if (item.classList.contains('map__pin--active')) {
@@ -29,16 +28,13 @@
       // добавляет класс активному элементу
       target.classList.add('map__pin--active');
 
-      // добавляет координаты в поле адреса
-      window.map.address.setAttribute('value', coords.textContent);
-
       window.utils.hideShownOffers();
 
       offer.classList.remove('hidden');
       closePopup(offer);
     },
 
-    successHandler: function (data) {
+    showRandomPins: function (data) {
       // исходный и фильтруемый впоследствии массив данных
       window.dataToFilter = data;
 
@@ -93,7 +89,7 @@
   // функция сохранения данных
   var getData = function (data) {
     window.map.initialData = data;
-    window.map.successHandler(data);
+    window.map.showRandomPins(data);
   };
 
   [].forEach.call(window.utils.disabledElements, function (item) {

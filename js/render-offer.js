@@ -20,6 +20,7 @@
     var offerElement = similarOfferElementTemplate.cloneNode(true);
     var offerTitleElement = offerElement.querySelector('.popup__title');
     var offerFeaturesElement = offerElement.querySelector('.popup__features');
+    var offerFeatureElements = offerElement.querySelectorAll('.popup__features li');
     var offerDescriptionElement = offerElement.querySelector('.popup__description');
     var offerAddressElement = offerElement.querySelector('.popup__text--address');
     var offerPriceElement = offerElement.querySelector('.popup__text--price');
@@ -51,7 +52,20 @@
       window.utils.hideElement(offerTimeElement);
     }
 
-    insertOfferElementDetails(array.offer.features, offerFeaturesElement);
+    if (array.offer.features.length) {
+      for (var i = 0; i < array.offer.features.length; i++) {
+        var feature = offerElement.querySelector('.popup__feature--' + array.offer.features[i] + '');
+        feature.textContent = array.offer.features[i];
+      }
+    } else {
+      window.utils.hideElement(offerFeaturesElement);
+    }
+
+    offerFeatureElements.forEach(function (el) {
+      if (el.textContent === '') {
+        window.utils.hideElement(el);
+      }
+    });
 
     insertOfferElementDetails(array.offer.description, offerDescriptionElement);
 

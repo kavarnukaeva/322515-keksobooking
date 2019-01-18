@@ -78,15 +78,18 @@
     syncSelectElements(window.form.checkOutSelect, window.form.checkInSelect);
   });
 
-  formElement.addEventListener('submit', function (evt) {
+  var formSubmitHandler = function (evt) {
     window.backend.upload(new FormData(formElement), function () {
       window.utils.returnSuccessMessage();
       window.utils.changeToInitialState();
     });
     evt.preventDefault();
-  });
+  };
 
-  formResetElement.addEventListener('click', function () {
+  var formResetHandler = function () {
     window.utils.changeToInitialState();
-  });
+  };
+
+  formElement.addEventListener('submit', formSubmitHandler);
+  formResetElement.addEventListener('click', formResetHandler);
 })();

@@ -56,6 +56,9 @@
       formElement.reset();
       window.filter.mapFiltersElements.reset();
 
+      window.uploadFile.avatar.src = window.Constants.SRC;
+      window.uploadFile.housePhoto.innerHTML = '';
+
       window.form.priceInput.removeAttribute('min');
       window.form.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.bungalo);
       setDefaultSelectElementValue(window.form.checkInSelect);
