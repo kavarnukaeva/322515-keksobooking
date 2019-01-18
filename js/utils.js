@@ -1,35 +1,43 @@
 'use strict';
 
 (function () {
-  window.utils = {
-    changeToInitialState: function () {
-      var mapElement = document.querySelector('.map');
-      var formElement = document.querySelector('.ad-form');
+  var mainElement = document.querySelector('main');
+  var mapElement = document.querySelector('.map');
+  var formElement = document.querySelector('.ad-form');
+  var mainPinElement = document.querySelector('.map__pin--main');
+  var errorMessageElement = document.querySelector('#error').content.querySelector('.error');
+  var successMessageElement = document.querySelector('#success').content.querySelector('.success');
 
+  var setDefaultSelectElementValue = function (el) {
+    el.querySelector('[selected]').removeAttribute('selected');
+    el.querySelector('option:first-child').setAttribute('selected', '');
+  };
+
+  window.utils = {
+    disabledElements: document.querySelectorAll('form.ad-form fieldset'),
+    mapFiltersChildrenElements: document.querySelector('.map__filters').children,
+
+    changeToInitialState: function () {
+      var mapFiltersSelectElements = window.filter.mapFiltersElements.querySelectorAll('select');
       // возвращает карту и форму в неактивное состояние
       mapElement.classList.add('map--faded');
       formElement.classList.add('ad-form--disabled');
 
       // отключает поля формы поиска объявления для неактивного состояния
-      var disabledElements = document.querySelectorAll('form.ad-form fieldset');
-
-      [].forEach.call(disabledElements, function (item) {
+      [].forEach.call(window.utils.disabledElements, function (item) {
         item.setAttribute('disabled', '');
       });
 
       // отключает форму c фильтрами для неактивного состояния
-      var mapFiltersChildrenElements = document.querySelector('.map__filters').children;
-
-      [].forEach.call(mapFiltersChildrenElements, function (item) {
+      [].forEach.call(window.utils.mapFiltersChildrenElements, function (item) {
         item.setAttribute('disabled', '');
       });
 
       // возвращает главной метке дефолтные координаты
-      var mainPinElement = document.querySelector('.map__pin--main');
       mainPinElement.style.left = window.Constants.LEFT_MAINPIN + 'px';
       mainPinElement.style.top = window.Constants.TOP_MAINPIN + 'px';
 
-      window.address.setAttribute('value', window.Constants.TOP_MAINPIN + ', ' + window.Constants.LEFT_MAINPIN);
+      window.map.address.setAttribute('value', window.Constants.TOP_MAINPIN + ', ' + window.Constants.LEFT_MAINPIN);
 
       // скрывает показанные объявления
       window.utils.hideShownOffers();
@@ -44,9 +52,18 @@
       };
       hideShownPins();
 
+      // приводит данные форм к изначальному состоянию
       formElement.reset();
-      window.priceInput.removeAttribute('min');
-      window.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.bungalo);
+      window.filter.mapFiltersElements.reset();
+
+      window.form.priceInput.removeAttribute('min');
+      window.form.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.bungalo);
+      setDefaultSelectElementValue(window.form.checkInSelect);
+      setDefaultSelectElementValue(window.form.checkOutSelect);
+
+      [].forEach.call(mapFiltersSelectElements, function (el) {
+        setDefaultSelectElementValue(el);
+      });
     },
 
     hideShownOffers: function () {
@@ -61,38 +78,48 @@
     },
 
     returnErrorMessage: function () {
-      var errorMessageElement = document.querySelector('#error').content.querySelector('.error');
-      var mainElement = document.querySelector('main');
-
       mainElement.appendChild(errorMessageElement);
       errorMessageElement.style.display = 'block';
 
-      document.addEventListener('click', function () {
-        errorMessageElement.style.display = 'none';
-      });
+      var documentClickErrorHandler = function () {
+        window.utils.hideElement(errorMessageElement);
+        removeEventListener('click', documentClickErrorHandler);
+      };
+
+      var documentKeydownErrorHandler = function () {
+        window.utils.hideElement(errorMessageElement);
+        removeEventListener('keydown', documentKeydownErrorHandler);
+      };
+
+      document.addEventListener('click', documentClickErrorHandler);
 
       document.addEventListener('keydown', function (evt) {
         if (evt.keyCode === window.Constants.ESC_KEYCODE) {
-          errorMessageElement.style.display = 'none';
+          documentKeydownErrorHandler();
         }
       });
     },
 
     returnSuccessMessage: function () {
-      var mainElement = document.querySelector('main');
-
-      var successMessageElement = document.querySelector('#success').content.querySelector('.success');
-
       mainElement.appendChild(successMessageElement);
       successMessageElement.style.display = 'block';
 
-      document.addEventListener('click', function () {
-        successMessageElement.style.display = 'none';
-      });
+      var documentClickSuccessHandler = function () {
+        window.utils.hideElement(successMessageElement);
+        removeEventListener('click', documentClickSuccessHandler);
+      };
+
+      var documentKeydownSuccessHandler = function () {
+        window.utils.hideElement(successMessageElement);
+        removeEventListener('keydown', documentClickSuccessHandler);
+      };
+
+
+      document.addEventListener('click', documentClickSuccessHandler);
 
       document.addEventListener('keydown', function (evt) {
         if (evt.keyCode === window.Constants.ESC_KEYCODE) {
-          successMessageElement.style.display = 'none';
+          documentKeydownSuccessHandler();
         }
       });
     },
@@ -140,6 +167,10 @@
       }
 
       return array;
+    },
+
+    hideElement: function (el) {
+      el.style.display = 'none';
     },
 
     removeElements: function (array) {

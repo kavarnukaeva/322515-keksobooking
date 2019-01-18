@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  window.mapFiltersElements = document.querySelector('.map__filters');
-
   // функция удаления всех меток и объявлений
   var removeAll = function () {
     var allPinsElements = document.querySelectorAll('.map__pin:not(.map__pin--main)');
@@ -31,37 +29,40 @@
   };
 
   var getPriceValue = function (offerPrice) {
-    if (offerPrice < window.Constants.FILTER_HOUSING_PRICE.low) {
-      return window.Constants.FILTER_HOUSING_PRICE_TYPE.low;
-    } else if (offerPrice >= window.Constants.FILTER_HOUSING_PRICE.high) {
-      return window.Constants.FILTER_HOUSING_PRICE_TYPE.high;
+    if (offerPrice < window.Constants.FILTER_HOUSING_PRICE_TYPE.low) {
+      return window.Constants.FILTER_HOUSING_PRICE.low;
+    } else if (offerPrice >= window.Constants.FILTER_HOUSING_PRICE_TYPE.high) {
+      return window.Constants.FILTER_HOUSING_PRICE.high;
     }
-    return window.Constants.FILTER_HOUSING_PRICE_TYPE.middle;
+    return window.Constants.FILTER_HOUSING_PRICE.middle;
   };
 
-  window.filterData = function (data, cropDataToRender) {
-    // очищает контейнер
-    removeAll();
+  window.filter = {
+    mapFiltersElements: document.querySelector('.map__filters'),
+    filterData: function (data, cropDataToRender) {
+      // очищает контейнер
+      removeAll();
 
-    var housingTypeValue = window.mapFiltersElements.querySelector('#housing-type').value;
-    var housingPriceValue = window.mapFiltersElements.querySelector('#housing-price').value;
-    var housingRoomsValue = window.mapFiltersElements.querySelector('#housing-rooms').value;
-    var housingGuestsValue = window.mapFiltersElements.querySelector('#housing-guests').value;
-    var checkedFeaturesElements = window.mapFiltersElements.querySelectorAll('input:checked');
+      var housingTypeValue = window.filter.mapFiltersElements.querySelector('#housing-type').value;
+      var housingPriceValue = window.filter.mapFiltersElements.querySelector('#housing-price').value;
+      var housingRoomsValue = window.filter.mapFiltersElements.querySelector('#housing-rooms').value;
+      var housingGuestsValue = window.filter.mapFiltersElements.querySelector('#housing-guests').value;
+      var checkedFeaturesElements = window.filter.mapFiltersElements.querySelectorAll('input:checked');
 
-    var filteredData = data.filter(function (it) {
-      return compareValues(it.offer.type, housingTypeValue) &&
-        compareValues(getPriceValue(it.offer.price), housingPriceValue) &&
-        compareValues(it.offer.rooms, housingRoomsValue) &&
-        compareValues(it.offer.guests, housingGuestsValue) &&
-        compareFeaturesElements(it.offer.features, checkedFeaturesElements);
-    });
+      var filteredData = data.filter(function (it) {
+        return compareValues(it.offer.type, housingTypeValue) &&
+          compareValues(getPriceValue(it.offer.price), housingPriceValue) &&
+          compareValues(it.offer.rooms, housingRoomsValue) &&
+          compareValues(it.offer.guests, housingGuestsValue) &&
+          compareFeaturesElements(it.offer.features, checkedFeaturesElements);
+      });
 
-    // если длина данных больше необходимого
-    if (filteredData.length > window.Constants.PINS_TO_RENDER_QUANTITY) {
-      cropDataToRender = window.utils.cropData(filteredData, window.Constants.PINS_TO_RENDER_QUANTITY);
+      // если длина данных больше необходимого
+      if (filteredData.length > window.Constants.PINS_TO_RENDER_QUANTITY) {
+        cropDataToRender = window.utils.cropData(filteredData, window.Constants.PINS_TO_RENDER_QUANTITY);
+      }
+
+      window.map.renderPins(filteredData, cropDataToRender);
     }
-
-    window.renderPins(filteredData, cropDataToRender);
   };
 })();

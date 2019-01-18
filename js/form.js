@@ -2,6 +2,17 @@
 
 (function () {
   var offerTitleInput = document.querySelector('#title');
+  var formElement = document.querySelector('.ad-form');
+  var formResetElement = formElement.querySelector('.ad-form__reset');
+  var roomsNumberInput = document.querySelector('#room_number');
+  var guestsNumberInput = document.querySelector('#capacity');
+  var homeTypeInput = document.querySelector('#type');
+
+  window.form = {
+    priceInput: document.querySelector('#price'),
+    checkInSelect: document.querySelector('#timein'),
+    checkOutSelect: document.querySelector('#timeout')
+  };
 
   offerTitleInput.addEventListener('invalid', function () {
     if (offerTitleInput.validity.tooShort) {
@@ -14,15 +25,6 @@
       offerTitleInput.setCustomValidity('');
     }
   });
-
-  var formElement = document.querySelector('.ad-form');
-  var formResetElement = formElement.querySelector('.ad-form__reset');
-  var roomsNumberInput = document.querySelector('#room_number');
-  var guestsNumberInput = document.querySelector('#capacity');
-  var homeTypeInput = document.querySelector('#type');
-  window.priceInput = document.querySelector('#price');
-  var checkInSelect = document.querySelector('#timein');
-  var checkOutSelect = document.querySelector('#timeout');
 
   formElement.addEventListener('change', function () {
     if (parseInt(roomsNumberInput.value, 10) < parseInt(guestsNumberInput.value, 10)) {
@@ -38,21 +40,21 @@
 
   homeTypeInput.addEventListener('change', function () {
     if (homeTypeInput.value === window.Constants.PLACE_TYPE.bungalo) {
-      window.priceInput.setAttribute('min', window.Constants.MIN_PRICE.bungalo);
-      window.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.bungalo);
+      window.form.priceInput.setAttribute('min', window.Constants.MIN_PRICE.bungalo);
+      window.form.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.bungalo);
     } else if (homeTypeInput.value === window.Constants.PLACE_TYPE.flat) {
-      window.priceInput.setAttribute('min', window.Constants.MIN_PRICE.flat);
-      window.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.flat);
+      window.form.priceInput.setAttribute('min', window.Constants.MIN_PRICE.flat);
+      window.form.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.flat);
     } else if (homeTypeInput.value === window.Constants.PLACE_TYPE.house) {
-      window.priceInput.setAttribute('min', window.Constants.MIN_PRICE.house);
-      window.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.house);
+      window.form.priceInput.setAttribute('min', window.Constants.MIN_PRICE.house);
+      window.form.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.house);
     } else {
-      window.priceInput.setAttribute('min', window.Constants.MIN_PRICE.palace);
-      window.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.palace);
+      window.form.priceInput.setAttribute('min', window.Constants.MIN_PRICE.palace);
+      window.form.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.palace);
     }
   });
 
-  var sync = function (selected, synchronized) {
+  var syncSelectElements = function (selected, synchronized) {
     var activeSelectOptionSelected = selected.querySelector('[selected]');
     activeSelectOptionSelected.removeAttribute('selected');
 
@@ -68,12 +70,12 @@
     selectOptionValue.setAttribute('selected', '');
   };
 
-  checkInSelect.addEventListener('change', function () {
-    sync(checkInSelect, checkOutSelect);
+  window.form.checkInSelect.addEventListener('change', function () {
+    syncSelectElements(window.form.checkInSelect, window.form.checkOutSelect);
   });
 
-  checkOutSelect.addEventListener('change', function () {
-    sync(checkOutSelect, checkInSelect);
+  window.form.checkOutSelect.addEventListener('change', function () {
+    syncSelectElements(window.form.checkOutSelect, window.form.checkInSelect);
   });
 
   formElement.addEventListener('submit', function (evt) {
