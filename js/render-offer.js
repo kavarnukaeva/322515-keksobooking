@@ -53,10 +53,11 @@
     }
 
     if (array.offer.features.length) {
-      for (var i = 0; i < array.offer.features.length; i++) {
-        var feature = offerElement.querySelector('.popup__feature--' + array.offer.features[i] + '');
-        feature.textContent = array.offer.features[i];
-      }
+
+      array.offer.features.forEach(function (el) {
+        var feature = offerElement.querySelector('.popup__feature--' + el + '');
+        feature.textContent = el;
+      });
     } else {
       window.utils.hideElement(offerFeaturesElement);
     }

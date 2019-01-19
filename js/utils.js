@@ -57,7 +57,7 @@
       // приводит данные форм к изначальному состоянию
       formElement.reset();
       window.filter.mapFiltersElements.reset();
-      window.uploadFile.avatarElement.src = window.Constants.SRC;
+      window.uploadFile.avatarElement.src = window.Constants.MUFFIN_SRC;
 
       if (adFormPhotosElements.length > 1) {
         adFormPhotosElements[0].innerHTML = '';
