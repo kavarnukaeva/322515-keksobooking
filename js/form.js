@@ -83,13 +83,24 @@
       window.utils.returnSuccessMessage();
       window.utils.changeToInitialState();
     });
+
     evt.preventDefault();
+    formElement.removeEventListener('submit', submitForm);
   };
 
   var formResetHandler = function () {
     window.utils.changeToInitialState();
+    formResetElement.removeEventListener('click', resetForm);
   };
 
-  formElement.addEventListener('submit', formSubmitHandler);
-  formResetElement.addEventListener('click', formResetHandler);
+  var resetForm = function () {
+    formResetElement.addEventListener('click', formResetHandler);
+  };
+
+  var submitForm = function () {
+    formElement.addEventListener('submit', formSubmitHandler);
+  };
+
+  resetForm();
+  submitForm();
 })();

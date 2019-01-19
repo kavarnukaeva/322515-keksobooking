@@ -4,12 +4,12 @@
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
   var avatarContainerElement = document.querySelector('.ad-form-header__preview');
-  var avatarFileChooser = document.querySelector('.ad-form__field input[type=file]');
-  var housePhotoFileChooser = document.querySelector('.ad-form__upload input[type=file]');
+  var avatarFileChooserElement = document.querySelector('.ad-form__field input[type=file]');
+  var housePhotoFileChooserElement = document.querySelector('.ad-form__upload input[type=file]');
 
   window.uploadFile = {
-    avatar: document.querySelector('.ad-form-header__preview img'),
-    housePhoto: document.querySelector('.ad-form__photo')
+    avatarElement: document.querySelector('.ad-form-header__preview img'),
+    housePhotoElement: document.querySelector('.ad-form__photo')
   };
 
   var uploadFile = function (chooser, el) {
@@ -25,12 +25,21 @@
         var reader = new FileReader();
 
         reader.addEventListener('load', function () {
-          if (el.hasChildNodes()) {
+          if (el.hasChildNodes() && !el.classList.contains('ad-form__photo')) {
             el.querySelector('img').src = reader.result;
           } else {
-            var newImg = document.createElement('img');
-            newImg.src = reader.result;
-            el.appendChild(newImg);
+            var parentElement = el.parentNode;
+            var newImgElement = document.createElement('img');
+            var newDivElement = document.createElement('div');
+            newDivElement.classList.add('ad-form__photo');
+            newImgElement.src = reader.result;
+
+            if (!el.children.length) {
+              el.appendChild(newImgElement);
+            } else {
+              newDivElement.appendChild(newImgElement);
+              parentElement.appendChild(newDivElement);
+            }
           }
         });
 
@@ -39,6 +48,6 @@
     });
   };
 
-  uploadFile(avatarFileChooser, avatarContainerElement);
-  uploadFile(housePhotoFileChooser, window.uploadFile.housePhoto);
+  uploadFile(avatarFileChooserElement, avatarContainerElement);
+  uploadFile(housePhotoFileChooserElement, window.uploadFile.housePhotoElement);
 })();

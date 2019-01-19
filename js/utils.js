@@ -19,6 +19,8 @@
 
     changeToInitialState: function () {
       var mapFiltersSelectElements = window.filter.mapFiltersElements.querySelectorAll('select');
+      var adFormPhotosElements = document.querySelectorAll('.ad-form__photo');
+
       // возвращает карту и форму в неактивное состояние
       mapElement.classList.add('map--faded');
       formElement.classList.add('ad-form--disabled');
@@ -55,9 +57,17 @@
       // приводит данные форм к изначальному состоянию
       formElement.reset();
       window.filter.mapFiltersElements.reset();
+      window.uploadFile.avatarElement.src = window.Constants.SRC;
 
-      window.uploadFile.avatar.src = window.Constants.SRC;
-      window.uploadFile.housePhoto.innerHTML = '';
+      if (adFormPhotosElements.length > 1) {
+        adFormPhotosElements[0].innerHTML = '';
+
+        for (var i = 1; i < adFormPhotosElements.length; i++) {
+          adFormPhotosElements[i].remove();
+        }
+      } else {
+        window.uploadFile.housePhotoElement.innerHTML = '';
+      }
 
       window.form.priceInput.removeAttribute('min');
       window.form.priceInput.setAttribute('placeholder', window.Constants.MIN_PRICE.bungalo);

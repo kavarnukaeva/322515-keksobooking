@@ -819,6 +819,8 @@ fieldset {
 }
 
 .ad-form__photo {
+  position: relative;
+
   margin-right: 10px;
   margin-bottom: 10px;
 
@@ -827,10 +829,18 @@ fieldset {
 
   background-color: #e4e4de;
   border-radius: 5px;
+
+  overflow: hidden;
 }
 
 .ad-form__photo img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
   width: 100%;
+
+  transform: translate(-50%, -50%);
 }
 
 .ad-form__element--submit {
